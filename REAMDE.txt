@@ -10,3 +10,12 @@ requirements/US-101-cardholder-search.md
 Una vez que hayas leído ambos, asume el rol del Agente Planificador indicado en el skill y genera el plan de pruebas, la matriz de riesgos y las preguntas abiertas para la historia de usuario US-101
 ------------------------------------------------------------
 
+Usa tu herramienta de GitHub para leer estos dos archivos del repositorio HugoTcach/playwright-mvp:
+
+skills/02-generator-skill.md
+
+requirements/US-101-cardholder-search.md
+
+Asume el rol del Agente Generador (Generator). Necesito que redactes el código en Playwright (TypeScript) para el siguiente escenario: 'El usuario deja el campo de búsqueda vacío, hace clic en Search y el sistema muestra un mensaje de error que dice: Please enter an ID'.
+
+Genera el código para el archivo cardholders.page.ts (Page Object) y el archivo search.spec.ts (Prueba).
