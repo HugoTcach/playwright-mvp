@@ -1,0 +1,12 @@
+PROMPTS
+
+
+Usa tu herramienta de GitHub para obtener y leer el contenido de estos dos archivos en el repositorio HugoTcach/playwright-mvp:
+
+skills/01-planner-skill.md
+
+requirements/US-101-cardholder-search.md
+
+Una vez que hayas leído ambos, asume el rol del Agente Planificador indicado en el skill y genera el plan de pruebas, la matriz de riesgos y las preguntas abiertas para la historia de usuario US-101
+------------------------------------------------------------
+
