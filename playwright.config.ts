@@ -10,21 +10,38 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  // En CI se recomienda limitar los workers a 2 para evitar problemas de memoria y concurrencia
+  workers: process.env.CI ? 2 : undefined, 
   
-  /* HITO 7: Multi-Reporter (HTML para el humano, JUnit XML para enviar a Jira/Xray) */
-  reporter: [
-    ['html'], 
-    ['junit', { outputFile: 'test-results/xray-report.xml' }]
-  ],
+  /* HITO 7: Configuración Dinámica de Reporteros (Local vs Nube) */
+  reporter: process.env.CI
+    ? [
+        // 1. Integración nativa con PRs de GitHub
+        ['github'], 
+        // 2. Reporte humano, pero sin abrirse automáticamente en el servidor
+        ['html', { open: 'never' }], 
+        // 3. XML para Xray: Se incrustan las capturas en Base64 directamente en el archivo
+        ['junit', { 
+          outputFile: 'playwright-report/results.xml',
+          embedAnnotationsAsProperties: true 
+        }],
+        // 4. Blob: Formato crudo obligatorio para unificar reportes tras el Sharding
+        ['blob'] 
+      ]
+    : [
+        // Configuración para el entorno local del QA
+        ['html', { open: 'on-failure' }],
+        ['junit', { outputFile: 'test-results/xray-report.xml' }]
+      ],
   
   use: {
     baseURL: process.env.BASE_URL || 'http://localhost:3000',
     
     /* HITO 7: Recolección de Evidencia Forense Automática */
-    trace: 'retain-on-failure',     // Guarda el DOM y la red solo si el test falla
-    screenshot: 'only-on-failure',  // Toma una foto en el instante exacto del error
-    video: 'retain-on-failure',     // Guarda la grabación de pantalla del test fallido
+    // En CI, solo guardamos el trace completo a partir del primer reintento fallido para ahorrar espacio
+    trace: process.env.CI ? 'on-first-retry' : 'retain-on-failure', 
+    screenshot: 'only-on-failure',  
+    video: 'retain-on-failure',     
   },
 
   projects: [

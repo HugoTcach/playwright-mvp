@@ -15,6 +15,7 @@ export class SwagLabsPage {
   // --- Inventario / Carrito (AC3) ---
   readonly inventoryTitle: Locator;
   readonly cartBadge: Locator;
+  readonly cartLink: Locator;
   readonly checkoutButton: Locator;
 
   // --- Checkout: datos del comprador (AC4) ---
@@ -46,6 +47,7 @@ export class SwagLabsPage {
      * referencia más estable disponible para este elemento.
      */
     this.cartBadge = page.locator('[data-test="shopping-cart-badge"]');
+    this.cartLink = page.locator('[data-test="shopping-cart-link"]');
     this.checkoutButton = page.getByRole('button', { name: 'Checkout' });
 
     this.firstNameInput = page.getByPlaceholder('First Name');
@@ -107,6 +109,7 @@ export class SwagLabsPage {
 
   // AC4
   async goToCheckout(): Promise<void> {
+    await this.cartLink.click();
     await this.checkoutButton.click();
   }
 

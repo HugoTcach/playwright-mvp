@@ -33,19 +33,30 @@ jobs:
       run: npx playwright install --with-deps
       
     - name: 🚀 Ejecutar pruebas automatizadas
-      # Ejecuta únicamente la suite preparada para E2E en la nube
-      run: npx playwright test tests/todo.spec.ts --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+      run: npx playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
       env:
-        # Inyectamos la URL directamente al entorno de GitHub
         BASE_URL: https://demo.playwright.dev/todomvc
 
     - name: 💾 Guardar reporte HTML y Evidencia
       uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
-        # Nombre dinámico para que los servidores no sobreescriban sus archivos
         name: reporte-fragmento-${{ matrix.shardIndex }}
         path: |
           playwright-report/
           test-results/
         retention-days: 14
+
+    - name: 📡 Enviar resultados a Xray (Jira)
+      # Se ejecuta siempre (incluso si los tests fallan), pero solo si la credencial existe en GitHub Secrets
+      if: always() && env.XRAY_CLIENT_ID != ''
+      env:
+        XRAY_CLIENT_ID: ${{ secrets.XRAY_CLIENT_ID }}
+        XRAY_CLIENT_SECRET: ${{ secrets.XRAY_CLIENT_SECRET }}
+      run: |
+        # 1. Obtener token temporal de la API de Xray Cloud
+        TOKEN=$(curl -s -H "Content-Type: application/json" -X POST --data "{ \"client_id\": \"$XRAY_CLIENT_ID\",\"client_secret\": \"$XRAY_CLIENT_SECRET\" }" https://xray.cloud.getxray.app/api/v1/authenticate | tr -d '"')
+        
+        # 2. Inyectar el reporte JUnit generado por Playwright en el proyecto destino
+        # Reemplazar "PROJ" con la clave real del proyecto en Jira el día de la integración
+        curl -s -H "Content-Type: text/xml" -X POST -H "Authorization: Bearer $TOKEN" --data @"playwright-report/results.xml" "https://xray.cloud.getxray.app/api/v1/import/execution/junit?projectKey=PROJ"
