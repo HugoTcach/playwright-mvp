@@ -1,27 +1,51 @@
-name: Playwright Tests
+name: Enterprise QA Pipeline
+
 on:
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+
 jobs:
-  test:
+  playwright-execution:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Sharding: Divide horizontalmente la carga de trabajo en 2 servidores paralelos
+        shardIndex: [1, 2]
+        shardTotal: [2]
+        
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
+    - name: 📥 Obtener código fuente
+      uses: actions/checkout@v4
+      
+    - name: ⚙️ Configurar Node.js
+      uses: actions/setup-node@v4
       with:
         node-version: lts/*
-    - name: Install dependencies
+        
+    - name: 📦 Instalar dependencias
       run: npm ci
-    - name: Install Playwright Browsers
+      
+    - name: 🌐 Instalar navegadores (Playwright)
       run: npx playwright install --with-deps
-    - name: Run Playwright tests
-      run: npx playwright test
-    - uses: actions/upload-artifact@v4
+      
+    - name: 🚀 Ejecutar pruebas automatizadas
+      # Ejecuta únicamente la fracción de tests asignada a este servidor
+      run: npx playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+      env:
+        # Inyectamos la URL directamente al entorno de GitHub
+        BASE_URL: https://demo.playwright.dev/todomvc
+
+    - name: 💾 Guardar reporte HTML y Evidencia
+      uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
+        # Nombre dinámico para que los servidores no sobreescriban sus archivos
+        name: reporte-fragmento-${{ matrix.shardIndex }}
+        path: |
+          playwright-report/
+          test-results/
+        retention-days: 14
