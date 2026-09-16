@@ -1,3 +1,29 @@
+En nuestra arquitectura, MCP (Model Context Protocol) es literalmente el componente que transforma a la Inteligencia Artificial de un simple "chatbot" que genera texto, a un Agente autónomo con "ojos y manos" capaces de operar en tu computadora.
+
+Es un protocolo de código abierto que actúa como un puente estandarizado entre el modelo de lenguaje (como Claude) y tus herramientas locales o de servidor.
+
+En la Capa de Orquestación de nuestra suite, el MCP cumple funciones críticas a través de dos servidores específicos que instalamos en el Hito 1:
+
+1. Servidor GitHub MCP (El Lector de Contexto)
+Su función: Le da al agente acceso directo y seguro a los archivos de tu proyecto y al control de versiones.
+
+En la práctica: Cuando le pides al Agente Planificador que lea la US-101, no copias y pegas el texto en el chat. El agente utiliza el GitHub MCP para ir a la carpeta requirements/, abrir el archivo Markdown, leer los criterios de aceptación y, además, leer sus propias instrucciones desde la carpeta skills/. A futuro, este MCP es el que permitirá al agente crear un Pull Request (PR) automáticamente.
+
+2. Servidor Playwright MCP (Los Ojos y las Manos)
+Su función: Permite que la IA controle un navegador en vivo y entienda lo que está viendo.
+
+En la práctica: Cuando el Agente Generador necesita automatizar un flujo, utiliza este MCP para abrir Chromium en modo aislado. El MCP le traduce visualmente la página web al agente entregándole el Árbol de Accesibilidad (DOM Semántico). Así es como la IA sabe exactamente que hay un campo llamado "Cardholder ID" y puede generar el código usando getByLabel('Cardholder ID') de forma perfecta, sin adivinar.
+
+Resumen del Flujo
+El cliente donde interactúas (ej. Claude Desktop) actúa como el Host. Cuando le das una orden, el Host se comunica a través del protocolo MCP con los servidores locales (GitHub y Playwright) para ejecutar acciones en el sistema operativo, recuperar la información solicitada y luego devolverte un entregable técnico (como un plan de pruebas o un archivo .spec.ts).
+
+Es la columna vertebral técnica que hace posible todo nuestro ciclo de Agentic Testing.
+
+
+
+
+
+
 PROMPTS
 
 

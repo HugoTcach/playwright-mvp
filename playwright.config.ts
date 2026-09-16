@@ -11,12 +11,20 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: 'html',
+  
+  /* HITO 7: Multi-Reporter (HTML para el humano, JUnit XML para enviar a Jira/Xray) */
+  reporter: [
+    ['html'], 
+    ['junit', { outputFile: 'test-results/xray-report.xml' }]
+  ],
   
   use: {
-    /* Consumimos la variable de entorno, con un fallback de seguridad */
     baseURL: process.env.BASE_URL || 'http://localhost:3000',
-    trace: 'on-first-retry',
+    
+    /* HITO 7: Recolección de Evidencia Forense Automática */
+    trace: 'retain-on-failure',     // Guarda el DOM y la red solo si el test falla
+    screenshot: 'only-on-failure',  // Toma una foto en el instante exacto del error
+    video: 'retain-on-failure',     // Guarda la grabación de pantalla del test fallido
   },
 
   projects: [
