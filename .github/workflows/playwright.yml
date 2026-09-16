@@ -33,8 +33,8 @@ jobs:
       run: npx playwright install --with-deps
       
     - name: 🚀 Ejecutar pruebas automatizadas
-      # Ejecuta únicamente la fracción de tests asignada a este servidor
-      run: npx playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+      # Ejecuta únicamente la suite preparada para E2E en la nube
+      run: npx playwright test tests/todo.spec.ts --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
       env:
         # Inyectamos la URL directamente al entorno de GitHub
         BASE_URL: https://demo.playwright.dev/todomvc
