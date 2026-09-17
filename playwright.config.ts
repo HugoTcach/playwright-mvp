@@ -2,7 +2,6 @@ import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
 import path from 'path';
 
-// Cargar variables de entorno desde el archivo .env
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 export default defineConfig({
@@ -28,9 +27,7 @@ export default defineConfig({
       ],
   
   use: {
-    // Si estamos en CI y no hay BASE_URL definida, aseguramos un fallback o evitamos fallas de conexión vacías
-    baseURL: process.env.BASE_URL || 'http://localhost:3000',
-    
+    baseURL: process.env.BASE_URL || 'https://www.saucedemo.com',
     trace: process.env.CI ? 'on-first-retry' : 'retain-on-failure', 
     screenshot: 'only-on-failure',  
     video: 'retain-on-failure',     
