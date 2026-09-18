@@ -25,7 +25,7 @@ export class DemoblazePage {
     this.laptopsCategoryLink = page.getByRole('link', { name: 'Laptops' });
     this.sonyVaioProductLink = page.getByRole('link', { name: 'Sony vaio i5' });
     this.addToCartLink = page.getByRole('link', { name: 'Add to cart' });
-    this.cartNavLink = page.getByRole('link', { name: 'Cart' });
+    this.cartNavLink = page.getByRole('link', { name: 'Cart', exact: true });
 
     this.placeOrderBtn = page.getByRole('button', { name: 'Place Order' });
   }
