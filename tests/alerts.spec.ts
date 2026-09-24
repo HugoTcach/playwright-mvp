@@ -18,7 +18,7 @@ test.describe('Fase 1: Interacciones Avanzadas - Alertas', () => {
     await alertsPage.prepararIntercepcionDialogo(TEST_DATA.nombrePrompt);
 
     // 2. Disparar la alerta: Hacer clic en el botón que abre el prompt
-    await alertsPage.promptAlertBtn.click();
+    await alertsPage.dispararAlertaPrompt();
 
     // 3. Aserción: Verificar que la aplicación procesó el texto inyectado en el prompt
     await expect(alertsPage.notificationName).toContainText(TEST_DATA.nombrePrompt);

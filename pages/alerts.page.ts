@@ -2,14 +2,17 @@ import { Page, Locator } from '@playwright/test';
 
 export class AlertsPage {
   readonly page: Page;
-  readonly simpleAlertBtn: Locator;
-  readonly confirmAlertBtn: Locator;
-  readonly promptAlertBtn: Locator;
+  
+  // 1. Encapsulamiento: Locadores de interacción privados para proteger el POM
+  private readonly simpleAlertBtn: Locator;
+  private readonly confirmAlertBtn: Locator;
+  private readonly promptAlertBtn: Locator;
+  
+  // Se mantiene público temporalmente porque tu test lo evalúa en un expect()
   readonly notificationName: Locator;
 
   constructor(page: Page) {
     this.page = page;
-    // Localizadores por ID para mayor resiliencia
     this.simpleAlertBtn = page.locator('#accept');
     this.confirmAlertBtn = page.locator('#confirm');
     this.promptAlertBtn = page.locator('#prompt');
@@ -26,12 +29,20 @@ export class AlertsPage {
    */
   async prepararIntercepcionDialogo(textoInyectar?: string) {
     this.page.once('dialog', async dialog => {
-      // Si el diálogo es un 'prompt' y requiere texto, lo inyecta antes de aceptar
       if (textoInyectar) {
         await dialog.accept(textoInyectar);
       } else {
         await dialog.accept();
       }
     });
+  }
+
+  /**
+   * 2. Bypass Arquitectónico:
+   * Al aplicar force: true, ignoramos los banners de cookies dinámicos 
+   * de terceros (fc-dialog-overlay) que bloquean la visibilidad en WebKit.
+   */
+  async dispararAlertaPrompt() {
+    await this.promptAlertBtn.click({ force: true });
   }
 }

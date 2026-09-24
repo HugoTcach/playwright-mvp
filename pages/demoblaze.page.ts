@@ -43,19 +43,16 @@ export class DemoblazePage {
   }
 
   /**
-   * Hace clic en "Add to cart" y acepta el dialogo nativo de confirmacion
-   * que dispara DemoBlaze al agregar un producto.
-   *
-   * El listener se registra con page.once('dialog', ...) ANTES del click
-   * para garantizar que Playwright intercepte el dialogo en el instante
-   * en que aparece, evitando que quede bloqueado esperando una interaccion
-   * manual que nunca llega.
+   * Hace clic en "Add to cart" y acepta el dialogo nativo de confirmacion.
+   * RESOLUCION ARQUITECTONICA: Se utiliza waitForEvent para pausar
+   * la ejecucion de Playwright hasta que el backend responda, el dialogo 
+   * realmente aparezca y se acepte.
    */
   async addProductToCart() {
-    this.page.once('dialog', async dialog => {
-      await dialog.accept();
-    });
+    const dialogPromise = this.page.waitForEvent('dialog');
     await this.addToCartLink.click();
+    const dialog = await dialogPromise;
+    await dialog.accept();
   }
 
   async goToCart() {

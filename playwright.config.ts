@@ -19,11 +19,21 @@ export default defineConfig({
           outputFile: 'playwright-report/results.xml',
           embedAnnotationsAsProperties: true 
         }],
-        ['blob'] 
+        ['blob'],
+        ['allure-playwright', { 
+          detail: true, 
+          outputFolder: 'allure-results', 
+          suiteTitle: false 
+        }]
       ]
     : [
         ['html', { open: 'on-failure' }],
-        ['junit', { outputFile: 'test-results/xray-report.xml' }]
+        ['junit', { outputFile: 'test-results/xray-report.xml' }],
+        ['allure-playwright', { 
+          detail: true, 
+          outputFolder: 'allure-results', 
+          suiteTitle: false 
+        }]
       ],
   
   use: {
